@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,19 +44,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      String? avatarBase64;
-      if (_imageFile != null) {
-        final bytes = _imageFile!.readAsBytesSync();
-        avatarBase64 = base64Encode(bytes);
-      }
-
       ref
           .read(authProvider.notifier)
           .signUp(
             name: _nameController.text.trim(),
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
-            avatar: avatarBase64,
+            imagePath: _imageFile?.path,
           );
     }
   }

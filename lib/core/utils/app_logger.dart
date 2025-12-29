@@ -8,7 +8,7 @@ class AppLogger {
     printer: PrettyPrinter(
       methodCount: 0,
       errorMethodCount: 5,
-      lineLength: 100,
+      lineLength: 120,
       colors: true,
       printEmojis: true,
       dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
