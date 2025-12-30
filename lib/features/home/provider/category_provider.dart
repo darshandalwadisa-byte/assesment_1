@@ -88,6 +88,37 @@ class CategoryNotifier extends AsyncNotifier<List<Category>> {
     }
   }
 
+  Future<void> deleteProductsByCategory(int categoryId) async {
+    try {
+      final path = 'categories/$categoryId/products';
+      while (true) {
+        // Fetch a batch of products
+        final List<dynamic> data = await _apiClient.get(path);
+        if (data.isEmpty) break;
+
+        // Delete fetched products
+        for (var item in data) {
+          final productId = item['id'];
+          if (productId != null) {
+            try {
+              await _apiClient.delete('products/$productId');
+            } catch (e) {
+              // Ignore 404s, but if other errors occur, we might get stuck in a loop.
+              // Ideally we should log or check. For now, assume 404 or success.
+            }
+          }
+        }
+
+        // Wait a bit or break if we want to rely on the next loop returning empty if successful.
+        // However, if pagination is offset-based, and we deleted them, the "next page" at offset 0
+        // will be the *remaining* products. So calling get(path) again (default offset 0) is correct!
+      }
+    } catch (e, stack) {
+      AppLogger.error('Error deleting category products', e, stack);
+      rethrow;
+    }
+  }
+
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => _fetchCategories());

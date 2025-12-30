@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_assesment_1/core/utils/app_logger.dart';
-import 'package:flutter_assesment_1/core/network/api_client.dart';
 import 'package:flutter_assesment_1/core/network/api_provider.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
 import '../models/product_filter_model.dart';
 import '../models/product_model.dart';
 
@@ -85,7 +83,7 @@ class ProductNotifier extends AsyncNotifier<List<Product>> {
   }) async {
     final apiClient = ref.read(apiClientProvider);
     try {
-      const path = 'products';
+      const path = 'products/';
       final currentOffset = offset ?? _offset;
 
       final pagedFilter = filter.copyWith(offset: currentOffset, limit: _limit);
@@ -101,21 +99,8 @@ class ProductNotifier extends AsyncNotifier<List<Product>> {
       );
       var products = data.map((json) => Product.fromJson(json)).toList();
 
-      // Client-side filtering check
-      if (filter.minPrice != null) {
-        products = products.where((p) => p.price >= filter.minPrice!).toList();
-      }
-      if (filter.maxPrice != null) {
-        products = products.where((p) => p.price <= filter.maxPrice!).toList();
-      }
-      if (filter.title != null && filter.title!.isNotEmpty) {
-        products = products
-            .where(
-              (p) =>
-                  p.title.toLowerCase().contains(filter.title!.toLowerCase()),
-            )
-            .toList();
-      }
+      // Client-side filtering check removed to rely on API parameters
+      // if (filter.minPrice != null) { ... }
 
       return (products: products, serverCount: data.length);
     } catch (e, stack) {
@@ -235,6 +220,16 @@ class ProductNotifier extends AsyncNotifier<List<Product>> {
         await refresh();
       }
     } catch (e, stack) {
+      if (e.toString().contains('EntityNotFoundError')) {
+        AppLogger.warning('Product already deleted, removing locally');
+        // Treat as success
+        if (state.value != null) {
+          final currentList = state.value!;
+          final newList = currentList.where((p) => p.id != id).toList();
+          state = AsyncValue.data(newList);
+        }
+        return;
+      }
       AppLogger.error('Error deleting product', e, stack);
       rethrow;
     }

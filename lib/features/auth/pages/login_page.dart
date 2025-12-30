@@ -1,56 +1,36 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_assesment_1/core/constants/app_colors.dart';
-import 'package:flutter_assesment_1/core/constants/app_strings.dart';
-import '../provider/auth_provider.dart';
+import 'package:flutter_assesment_1/features/auth/provider/auth_provider.dart';
+import 'package:flutter_assesment_1/routes/app_named.dart';
 
-class SignUpPage extends ConsumerStatefulWidget {
-  const SignUpPage({super.key});
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  ConsumerState<SignUpPage> createState() => _SignUpPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignUpPageState extends ConsumerState<SignUpPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  File? _imageFile;
-  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 50, // Optimize image size
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
       ref
           .read(authProvider.notifier)
-          .signUp(
-            name: _nameController.text.trim(),
+          .login(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
-            imagePath: _imageFile?.path,
           );
     }
   }
@@ -61,6 +41,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
     ref.listen(authProvider, (previous, next) {
       if (next.error != null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.error!),
@@ -68,22 +49,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-      } else if (next.isSuccess && !next.isAuthenticated) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(AppStrings.successMessage),
-            backgroundColor: AppColors.snackBarSuccess,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        // Auto Login
-        ref
-            .read(authProvider.notifier)
-            .login(
-              email: _emailController.text.trim(),
-              password: _passwordController.text.trim(),
-            );
+      } else if (next.isSuccess) {
+        context.go(AppRoutes.home);
       }
     });
 
@@ -112,7 +79,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppStrings.signUpTitle,
+                        'Welcome Back',
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -121,60 +88,16 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        AppStrings.signUpSubtitle,
+                        'Sign in to your account',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.secondaryText,
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.grey[200],
-                          backgroundImage: _imageFile != null
-                              ? FileImage(_imageFile!)
-                              : null,
-                          child: _imageFile == null
-                              ? Icon(
-                                  Icons.camera_alt,
-                                  size: 40,
-                                  color: Colors.grey[400],
-                                )
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tap to upload avatar',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.secondaryText,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: AppStrings.nameLabel,
-                          prefixIcon: const Icon(Icons.person_outline),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.inputFill,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return AppStrings.nameRequired;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 32),
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: AppStrings.emailLabel,
+                          labelText: 'Email',
                           prefixIcon: const Icon(Icons.email_outlined),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -185,14 +108,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppStrings.emailRequired;
+                            return 'Email is required';
                           }
-                          final emailRegex = RegExp(
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          );
-                          if (value.contains(' ') ||
-                              !emailRegex.hasMatch(value)) {
-                            return AppStrings.emailInvalid;
+                          if (value.contains(' ')) {
+                            return 'Email cannot contain spaces';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Enter a valid email';
                           }
                           return null;
                         },
@@ -200,10 +122,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _passwordController,
-                        maxLength: 6,
                         obscureText: true,
                         decoration: InputDecoration(
-                          labelText: AppStrings.passwordLabel,
+                          labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -213,10 +134,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppStrings.passwordRequired;
+                            return 'Password is required';
                           }
                           if (value.length < 6) {
-                            return AppStrings.passwordLength;
+                            return 'Password must be at least 6 characters';
                           }
                           return null;
                         },
@@ -245,13 +166,20 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                                   ),
                                 )
                               : const Text(
-                                  AppStrings.signUpButton,
+                                  'Login',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () {
+                          context.push(AppRoutes.signUp);
+                        },
+                        child: const Text('Don\'t have an account? Sign Up'),
                       ),
                     ],
                   ),

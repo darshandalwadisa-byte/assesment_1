@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_assesment_1/core/network/dio_log_interceptor.dart';
+import 'package:flutter_assesment_1/core/network/auth_interceptor.dart';
 import 'package:flutter_assesment_1/core/utils/app_logger.dart';
 
 class ApiClient {
@@ -15,6 +16,7 @@ class ApiClient {
         ),
       ) {
     _dio.interceptors.add(DioLogInterceptor());
+    _dio.interceptors.add(AuthInterceptor(_dio));
   }
 
   /// Generic GET request

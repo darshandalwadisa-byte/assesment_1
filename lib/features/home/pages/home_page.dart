@@ -95,7 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[50],
-      drawer: const FilterDrawer(),
+      endDrawer: const FilterDrawer(), // Use endDrawer for filters
       appBar: AppBar(
         title: const Text(
           'Discover',
@@ -104,17 +104,12 @@ class _HomePageState extends ConsumerState<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        leading: IconButton(
-          icon: const Icon(Icons.menu), // Or standard burger
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
+        // Remove leading menu icon as it was redundant
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
+              _scaffoldKey.currentState?.openEndDrawer();
             },
           ),
           IconButton(

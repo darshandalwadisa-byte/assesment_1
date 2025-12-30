@@ -80,9 +80,92 @@ class CategoryListPage extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ref.read(categoryProvider.notifier).deleteCategory(category.id);
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                await ref
+                    .read(categoryProvider.notifier)
+                    .deleteCategory(category.id);
+                messenger.clearSnackBars();
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Category deleted successfully'),
+                  ),
+                );
+              } catch (e) {
+                messenger.clearSnackBars();
+                if (e.toString().contains('FOREIGN KEY')) {
+                  // Show cascade delete confirmation
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Category contains products'),
+                        content: Text(
+                          '"${category.name}" has products inside it. Do you want to delete ALL products and this category?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.pop(ctx);
+                              final msg = ScaffoldMessenger.of(context);
+                              // Show loading
+                              msg.showSnackBar(
+                                const SnackBar(content: Text('Deleting...')),
+                              );
+
+                              try {
+                                final notifier = ref.read(
+                                  categoryProvider.notifier,
+                                );
+                                await notifier.deleteProductsByCategory(
+                                  category.id,
+                                );
+                                await notifier.deleteCategory(category.id);
+
+                                msg.clearSnackBars();
+                                msg.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Category and products deleted!',
+                                    ),
+                                  ),
+                                );
+                              } catch (nestedError) {
+                                msg.clearSnackBars();
+                                msg.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: $nestedError'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              'Delete ALL',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                } else {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Failed to delete: ${e.toString().replaceAll('Exception:', '').trim()}',
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),

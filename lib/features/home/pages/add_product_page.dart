@@ -60,6 +60,7 @@ class _AddProductPageState extends ConsumerState<AddProductPage> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       if (_imageFile == null && widget.productToEdit == null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Please select an image')));
@@ -95,16 +96,15 @@ class _AddProductPageState extends ConsumerState<AddProductPage> {
             "description": _descriptionController.text.trim(),
             "categoryId": _selectedCategoryId,
           };
-          // Only add image if changed
-          if (_imageFile != null) {
-            updates["images"] = [imageUrl];
-          }
+          // Always include images (use existing if not changed)
+          updates["images"] = [imageUrl];
 
           await notifier.updateProduct(
             id: widget.productToEdit!.id,
             updates: updates,
           );
           if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Product updated successfully!')),
             );
@@ -118,6 +118,7 @@ class _AddProductPageState extends ConsumerState<AddProductPage> {
             images: [imageUrl],
           );
           if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Product added successfully!')),
             );
@@ -136,6 +137,7 @@ class _AddProductPageState extends ConsumerState<AddProductPage> {
         }
 
         if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );

@@ -36,8 +36,8 @@ class ProductFilter {
   Map<String, dynamic> toQueryParameters() {
     final Map<String, dynamic> params = {};
     if (title != null && title!.isNotEmpty) params['title'] = title;
-    if (minPrice != null) params['price_min'] = minPrice;
-    if (maxPrice != null) params['price_max'] = maxPrice;
+    if (minPrice != null) params['price_min'] = minPrice!.round().toString();
+    if (maxPrice != null) params['price_max'] = maxPrice!.round().toString();
     if (categoryId != null) params['categoryId'] = categoryId;
     if (offset != null) params['offset'] = offset;
     if (limit != null) params['limit'] = limit;

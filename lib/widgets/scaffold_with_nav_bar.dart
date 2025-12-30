@@ -30,6 +30,11 @@ class ScaffoldWithNavBar extends StatelessWidget {
             selectedIcon: Icon(Icons.category),
             label: 'Categories',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
       ),
     );

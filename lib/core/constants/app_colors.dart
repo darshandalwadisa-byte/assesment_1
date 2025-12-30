@@ -20,4 +20,5 @@ class AppColors {
 
   static const Color buttonBackground = Color(0xFF6A11CB);
   static const Color buttonForeground = Colors.white;
+  static const Color primary = Color(0xFF6A11CB);
 }

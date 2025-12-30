@@ -56,6 +56,7 @@ class _CreateCategoryPageState extends ConsumerState<CreateCategoryPage> {
     if (_formKey.currentState!.validate()) {
       // Validation: Must have image (either new local file or existing remote url)
       if (_imageFile == null && _currentImageUrl == null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Please select an image')));
@@ -88,6 +89,7 @@ class _CreateCategoryPageState extends ConsumerState<CreateCategoryPage> {
             image: imageUrl,
           );
           if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Category updated successfully!')),
             );
@@ -99,6 +101,7 @@ class _CreateCategoryPageState extends ConsumerState<CreateCategoryPage> {
             image: imageUrl,
           );
           if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Category created successfully!')),
             );
@@ -110,6 +113,7 @@ class _CreateCategoryPageState extends ConsumerState<CreateCategoryPage> {
         }
       } catch (e) {
         if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

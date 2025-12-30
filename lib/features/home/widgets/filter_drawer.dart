@@ -50,7 +50,10 @@ class _FilterDrawerState extends ConsumerState<FilterDrawer> {
     final newFilter = ProductFilter(
       categoryId: _selectedCategoryId,
       minPrice: _currentPriceRange.start,
-      maxPrice: _currentPriceRange.end,
+      // If at max slider value, treat as no upper limit (null)
+      maxPrice: _currentPriceRange.end >= _maxSliderValue
+          ? null
+          : _currentPriceRange.end,
       // Preserve title search if implemented elsewhere or add title field here too
       title: ref.read(productFilterProvider).title,
     );

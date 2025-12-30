@@ -43,7 +43,10 @@ class CategoryProductsPage extends ConsumerWidget {
               ),
               itemCount: products.length,
               itemBuilder: (context, index) {
-                return ProductCard(product: products[index]);
+                return ProductCard(
+                  product: products[index],
+                  showActions: false,
+                );
               },
             ),
           );
