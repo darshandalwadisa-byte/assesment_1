@@ -128,7 +128,7 @@ class _FilterBottomSheetState extends ConsumerState<FilterBottomSheet> {
           categoryState.when(
             data: (categories) {
               return DropdownButtonFormField<int>(
-                value: _selectedCategoryId,
+                initialValue: _selectedCategoryId,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(),
@@ -153,7 +153,7 @@ class _FilterBottomSheetState extends ConsumerState<FilterBottomSheet> {
               );
             },
             loading: () => const LinearProgressIndicator(),
-            error: (_, __) => const SizedBox(),
+            error: (_, _) => const SizedBox(),
           ),
           const SizedBox(height: 24),
           ElevatedButton(

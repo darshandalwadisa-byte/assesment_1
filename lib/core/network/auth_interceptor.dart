@@ -18,8 +18,6 @@ class AuthInterceptor extends Interceptor {
         try {
           AppLogger.info('Token expired. Attempting refresh...');
 
-          // Create a new Dio instance for refresh to avoid interceptor loop
-          // or use the same one but be careful. Using a fresh one is safer for isolation.
           final tokenDio = Dio(BaseOptions(baseUrl: _dio.options.baseUrl));
 
           final response = await tokenDio.post(

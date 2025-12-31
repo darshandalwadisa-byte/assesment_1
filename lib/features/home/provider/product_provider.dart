@@ -29,8 +29,9 @@ class ProductNotifier extends AsyncNotifier<List<Product>> {
 
   Future<void> fetchNextPage() async {
     // Prevent multiple concurrent fetches or fetching when done/loading
-    if (!_hasMore || state.isLoading || state.isRefreshing || _isFetching)
+    if (!_hasMore || state.isLoading || state.isRefreshing || _isFetching) {
       return;
+    }
 
     _isFetching = true;
     final filter = ref.read(productFilterProvider);

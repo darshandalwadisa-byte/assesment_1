@@ -189,35 +189,31 @@ class _FilterDrawerState extends ConsumerState<FilterDrawer> {
 
                   categoryState.when(
                     data: (categories) {
-                      return Column(
-                        children: [
-                          RadioListTile<int?>(
-                            value: null,
-                            groupValue: _selectedCategoryId,
-                            title: const Text('All Departments'),
-                            activeColor: Colors.black,
-                            contentPadding: EdgeInsets.zero,
-                            onChanged: (val) {
-                              setState(() {
-                                _selectedCategoryId = val;
-                              });
-                            },
-                          ),
-                          ...categories.map((category) {
-                            return RadioListTile<int?>(
-                              value: category.id,
-                              groupValue: _selectedCategoryId,
-                              title: Text(category.name),
+                      return RadioGroup<int?>(
+                        groupValue: _selectedCategoryId,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedCategoryId = val;
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            const RadioListTile<int?>(
+                              value: null,
+                              title: Text('All Departments'),
                               activeColor: Colors.black,
                               contentPadding: EdgeInsets.zero,
-                              onChanged: (val) {
-                                setState(() {
-                                  _selectedCategoryId = val;
-                                });
-                              },
-                            );
-                          }),
-                        ],
+                            ),
+                            ...categories.map((category) {
+                              return RadioListTile<int?>(
+                                value: category.id,
+                                title: Text(category.name),
+                                activeColor: Colors.black,
+                                contentPadding: EdgeInsets.zero,
+                              );
+                            }),
+                          ],
+                        ),
                       );
                     },
                     loading: () => const LinearProgressIndicator(),

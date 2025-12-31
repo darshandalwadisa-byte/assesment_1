@@ -197,7 +197,7 @@ class _CategoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -213,7 +213,7 @@ class _CategoryCard extends StatelessWidget {
               child: Image.network(
                 category.image,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (context, error, stackTrace) => Container(
                   color: Colors.grey[300],
                   child: const Icon(
                     Icons.category,
@@ -229,7 +229,10 @@ class _CategoryCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.8),
+                  ],
                   stops: const [0.5, 1.0],
                 ),
               ),
@@ -297,7 +300,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.4),
+          color: Colors.black.withValues(alpha: 0.4),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: color, size: 18),

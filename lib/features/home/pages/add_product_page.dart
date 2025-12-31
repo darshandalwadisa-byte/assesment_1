@@ -267,7 +267,7 @@ class _AddProductPageState extends ConsumerState<AddProductPage> {
               categoryState.when(
                 data: (categories) {
                   return DropdownButtonFormField<int>(
-                    value: _selectedCategoryId,
+                    initialValue: _selectedCategoryId,
                     decoration: const InputDecoration(
                       labelText: 'Category',
                       border: OutlineInputBorder(),

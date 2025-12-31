@@ -19,8 +19,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   final authNotifier = ValueNotifier(ref.read(authProvider));
 
-  ref.listen(authProvider, (_, next) => authNotifier.value = next);
-
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     refreshListenable: authNotifier,

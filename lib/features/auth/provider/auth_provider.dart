@@ -108,11 +108,7 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> getUserProfile([String? token]) async {
     try {
       String? accessToken = token;
-      if (accessToken == null) {
-        if (accessToken == null) {
-          accessToken = _storage.read('access_token');
-        }
-      }
+      accessToken ??= _storage.read('access_token');
 
       if (accessToken == null) return;
 

@@ -23,7 +23,7 @@ class ProductDetailsPage extends StatelessWidget {
                     ? product.images.first
                     : 'https://placehold.co/600x400',
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Center(
+                errorBuilder: (context, error, stackTrace) => const Center(
                   child: Icon(
                     Icons.image_not_supported,
                     size: 50,
@@ -53,7 +53,9 @@ class ProductDetailsPage extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
